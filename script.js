@@ -489,6 +489,109 @@ function initParallax() {
 }
 
 /* ═══════════════════════════════════════════════════
+   MUSIC PLAYER (YouTube IFrame API)
+═══════════════════════════════════════════════════ */
+let ytPlayer = null;
+let ytReady = false;
+let progressTimer = null;
+
+// Called automatically by YouTube IFrame API when loaded
+window.onYouTubeIframeAPIReady = function () {
+  ytReady = true;
+  ytPlayer = new YT.Player('yt-player', {
+    videoId: 'G5mbcsDvKo8',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      disablekb: 1,
+      rel: 0,
+      modestbranding: 1,
+    },
+    events: {
+      onReady: onYTReady,
+      onStateChange: onYTStateChange,
+    },
+  });
+};
+
+function onYTReady(event) {
+  const data = event.target.getVideoData();
+  const titleEl  = document.getElementById('player-title');
+  const artistEl = document.getElementById('player-artist');
+  if (titleEl)  titleEl.textContent  = data.title  || 'Unknown Track';
+  if (artistEl) artistEl.textContent = data.author || 'Unknown Artist';
+
+  const totalEl = document.getElementById('time-total');
+  if (totalEl) totalEl.textContent = formatTime(event.target.getDuration());
+}
+
+function onYTStateChange(event) {
+  const disc    = document.getElementById('vinyl-disc');
+  const needle  = document.getElementById('vinyl-needle');
+  const playIcon  = document.getElementById('play-icon');
+  const pauseIcon = document.getElementById('pause-icon');
+
+  const isPlaying = event.data === YT.PlayerState.PLAYING;
+
+  if (disc)   disc.classList.toggle('playing', isPlaying);
+  if (needle) needle.classList.toggle('playing', isPlaying);
+  if (playIcon)  playIcon.style.display  = isPlaying ? 'none' : '';
+  if (pauseIcon) pauseIcon.style.display = isPlaying ? ''     : 'none';
+
+  clearInterval(progressTimer);
+  if (isPlaying) {
+    progressTimer = setInterval(updateProgress, 500);
+  }
+}
+
+function updateProgress() {
+  if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+  const current  = ytPlayer.getCurrentTime();
+  const duration = ytPlayer.getDuration();
+  if (!duration) return;
+
+  const pct = (current / duration) * 100;
+  const fill = document.getElementById('progress-fill');
+  if (fill) fill.style.width = pct + '%';
+
+  const curEl = document.getElementById('time-current');
+  if (curEl) curEl.textContent = formatTime(current);
+}
+
+function formatTime(sec) {
+  if (!sec || isNaN(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function initMusicPlayer() {
+  const playBtn = document.getElementById('play-btn');
+  const track   = document.getElementById('progress-track');
+
+  if (playBtn) {
+    playBtn.addEventListener('click', () => {
+      if (!ytPlayer || !ytReady) return;
+      const state = ytPlayer.getPlayerState();
+      if (state === YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+      } else {
+        ytPlayer.playVideo();
+      }
+    });
+  }
+
+  if (track) {
+    track.addEventListener('click', (e) => {
+      if (!ytPlayer || !ytReady) return;
+      const rect = track.getBoundingClientRect();
+      const pct  = (e.clientX - rect.left) / rect.width;
+      ytPlayer.seekTo(ytPlayer.getDuration() * pct, true);
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -504,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHUDClock();
   initHUDCoords();
   initContactForm();
+  initMusicPlayer();
 
   // Start neural net
   const net = new NeuralNet('neural-canvas');
