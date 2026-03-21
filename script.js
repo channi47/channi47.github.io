@@ -250,14 +250,25 @@ function initScrollEffects() {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
           entry.target.querySelectorAll('.stat-number').forEach((el, i) => {
-            const target = parseInt(el.dataset.target, 10);
-            countUp(el, target, 1800, i * 100 + 120);
+            const raw = el.dataset.target;
+            if (raw === '∞') {
+              el._countId = (el._countId || 0) + 1;
+              const id = el._countId;
+              setTimeout(() => {
+                if (el._countId !== id) return;
+                el.textContent = '∞';
+                el.classList.add('stat-infinity-pop');
+              }, i * 100 + 120);
+            } else {
+              countUp(el, parseInt(raw, 10), 1800, i * 100 + 120);
+            }
           });
         } else {
           entry.target.classList.remove('visible');
           entry.target.querySelectorAll('.stat-number').forEach(el => {
-            el._countId = (el._countId || 0) + 1; // cancel in-flight animation
+            el._countId = (el._countId || 0) + 1;
             el.textContent = '0';
+            el.classList.remove('stat-infinity-pop');
           });
         }
       });
