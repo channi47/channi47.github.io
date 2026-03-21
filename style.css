@@ -983,6 +983,7 @@ section:not(#hero) {
 ═══════════════════════════════════════════════════ */
 .scan-block {
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
   background: rgba(0, 212, 255, 0.03);
   border: 1px solid var(--void-border2);
