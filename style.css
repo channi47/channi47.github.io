@@ -1362,16 +1362,16 @@ section:not(#hero) {
   position: absolute;
   top: 0.6rem;
   right: 0.6rem;
-  z-index: 3;
+  z-index: 10;
   font-family: var(--font-mono);
   font-size: 0.55rem;
   letter-spacing: 0.14em;
-  color: var(--cyan);
-  border: 1px solid rgba(0,212,255,0.6);
+  color: #00d4ff;
+  border: 1px solid #00d4ff;
   padding: 0.2rem 0.5rem;
   border-radius: 2px;
-  background: rgba(5, 5, 8, 0.88);
-  backdrop-filter: blur(4px);
+  background: #050508;
+  box-shadow: 0 0 6px rgba(0,212,255,0.3);
 }
 
 /* Body below cover */
