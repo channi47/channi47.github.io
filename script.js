@@ -872,7 +872,37 @@ const SFX = (() => {
     o.start(c.currentTime); o.stop(c.currentTime + 0.14);
   });
 
-  return { hover, click, reveal, success, error, navOpen, navClose };
+  // Arcade coin insert — hover on PLAY NOW
+  const coin = () => play(c => {
+    [[988, 0], [1318, 0.07]].forEach(([freq, delay]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.type = 'square';
+      o.frequency.setValueAtTime(freq, c.currentTime + delay);
+      const t = c.currentTime + delay;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.13, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      o.start(t); o.stop(t + 0.12);
+    });
+  });
+
+  // Game start — click on PLAY NOW (ascending power-up sweep)
+  const gameStart = () => play(c => {
+    [261, 329, 392, 523, 659, 784].forEach((freq, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.type = 'square';
+      o.frequency.value = freq;
+      const t = c.currentTime + i * 0.07;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.11, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      o.start(t); o.stop(t + 0.12);
+    });
+  });
+
+  return { hover, click, reveal, success, error, navOpen, navClose, coin, gameStart };
 })();
 
 function initSoundEffects() {
@@ -888,6 +918,13 @@ function initSoundEffects() {
       el.addEventListener('click', () => SFX.click(), { passive: true });
     });
   });
+
+  // PLAY NOW button — arcade coin on hover, power-up on click
+  const gameBtn = document.querySelector('.game-play-btn');
+  if (gameBtn) {
+    gameBtn.addEventListener('mouseenter', () => SFX.coin(), { passive: true });
+    gameBtn.addEventListener('click', () => SFX.gameStart(), { passive: true });
+  }
 
   // Section reveal sounds (only once per section entering view)
   const revealedSections = new WeakSet();
