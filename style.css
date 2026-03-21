@@ -1,4 +1,18 @@
 /* ═══════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+═══════════════════════════════════════════════════ */
+#scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan, #00d4ff), var(--violet, #7b2fff));
+  z-index: 200;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════
    DESIGN TOKENS
 ═══════════════════════════════════════════════════ */
 :root {
@@ -101,16 +115,54 @@ section:not(#hero) {
 ═══════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.8s var(--ease-expo), transform 0.8s var(--ease-expo);
+  transform: translateY(32px);
+  transition: opacity 0.85s var(--ease-expo), transform 0.85s var(--ease-expo);
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
+/* Direction variants */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.85s var(--ease-expo), transform 0.85s var(--ease-expo);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.85s var(--ease-expo), transform 0.85s var(--ease-expo);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+/* Stagger delays for grid children */
 .reveal:nth-child(2) { transition-delay: 0.1s; }
 .reveal:nth-child(3) { transition-delay: 0.2s; }
 .reveal:nth-child(4) { transition-delay: 0.3s; }
+
+/* Project card stagger */
+.projects-grid .reveal:nth-child(1) { transition-delay: 0s; }
+.projects-grid .reveal:nth-child(2) { transition-delay: 0.12s; }
+.projects-grid .reveal:nth-child(3) { transition-delay: 0.24s; }
+.projects-grid .reveal:nth-child(4) { transition-delay: 0.36s; }
+
+/* Stat card stagger */
+.about-stats .card:nth-child(1) { transition-delay: 0s; }
+.about-stats .card:nth-child(2) { transition-delay: 0.1s; }
+.about-stats .card:nth-child(3) { transition-delay: 0.2s; }
+.about-stats .card:nth-child(4) { transition-delay: 0.3s; }
+
+/* Scale-in for stat cards */
+.stat-card {
+  transform: scale(0.95) translateY(16px);
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-expo), transform 0.7s var(--ease-back);
+}
+.about-stats.visible .stat-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
 
 /* ═══════════════════════════════════════════════════
    CARD BASE
@@ -492,6 +544,16 @@ section:not(#hero) {
   90%  { transform: translate(-3px, 1px); opacity: 0.5; clip-path: polygon(0 55%, 100% 55%, 100% 75%, 0 75%); }
   92%  { transform: translate(2px, 0); opacity: 0.8; clip-path: polygon(0 5%, 100% 5%, 100% 20%, 0 20%); }
   94%  { transform: translate(0); opacity: 0; }
+}
+
+.hero-name-sub {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--text-secondary);
+  letter-spacing: 0.25em;
+  margin-top: -0.5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
 }
 
 .hero-tagline {

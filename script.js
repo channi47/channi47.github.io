@@ -387,6 +387,40 @@ function initContactForm() {
 }
 
 /* ═══════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+═══════════════════════════════════════════════════ */
+function initScrollProgress() {
+  const bar = document.getElementById('scroll-progress');
+  if (!bar) return;
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    bar.style.width = pct + '%';
+  }, { passive: true });
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO PARALLAX
+═══════════════════════════════════════════════════ */
+function initParallax() {
+  const hero = document.getElementById('hero');
+  const content = hero?.querySelector('.hero-content');
+  if (!content) return;
+
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    if (scrollY > window.innerHeight) return; // only in hero viewport
+    const offset = scrollY * 0.18;
+    content.style.transform = `translateY(${offset}px)`;
+    // Fade out hero content gently as user scrolls
+    const opacity = Math.max(0, 1 - scrollY / (window.innerHeight * 0.7));
+    content.style.opacity = opacity;
+  }, { passive: true });
+}
+
+/* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -396,6 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 120);
 
   initNavigation();
+  initScrollProgress();
+  initParallax();
   initHUDClock();
   initHUDCoords();
   initContactForm();
