@@ -1748,3 +1748,71 @@ section:not(#hero) {
   .vinyl-label { width: 72px; height: 72px; }
   .player-title { font-size: 0.95rem; }
 }
+
+/* ── Volume Control ── */
+.player-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.volume-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: 1;
+  min-width: 120px;
+}
+
+.vol-icon-btn {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: color var(--t-fast);
+  display: flex;
+  align-items: center;
+}
+.vol-icon-btn:hover { color: var(--cyan); }
+
+.volume-track {
+  flex: 1;
+  height: 3px;
+  background: var(--void-border2);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  transition: height var(--t-fast);
+}
+.volume-track:hover { height: 5px; }
+
+.volume-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--violet));
+  border-radius: 2px;
+  pointer-events: none;
+  position: relative;
+}
+.volume-fill::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 6px rgba(0,212,255,0.7);
+  transition: transform var(--t-fast);
+}
+.volume-track:hover .volume-fill::after { transform: translateY(-50%) scale(1); }
+
+.vol-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  width: 1.8rem;
+  text-align: right;
+  flex-shrink: 0;
+}
