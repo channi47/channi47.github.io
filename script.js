@@ -396,7 +396,22 @@ function initAgeClock() {
   const BIRTH = new Date('2006-04-07T00:00:00');
   const pad = (n, len = 2) => String(n).padStart(len, '0');
 
+  const isBirthday = () => {
+    const now = new Date();
+    return now.getMonth() === 3 && now.getDate() === 7; // April 7
+  };
+
+  const activateBirthday = () => {
+    const block = document.querySelector('.scan-block');
+    if (block) block.classList.add('birthday-mode');
+    // Confetti burst
+    spawnBirthdayParticles();
+  };
+
+  let birthdayActivated = false;
+
   const update = () => {
+    const birthday = isBirthday();
     let ms = Date.now() - BIRTH.getTime();
     const years  = Math.floor(ms / (365.25 * 24 * 3600 * 1000));
     ms -= years * 365.25 * 24 * 3600 * 1000;
@@ -408,12 +423,35 @@ function initAgeClock() {
     ms -= hours  * 3600 * 1000;
     const mins   = Math.floor(ms / 60000);
     const secs   = Math.floor((ms - mins * 60000) / 1000);
-    el.textContent =
-      `${years}Y ${pad(months)}M ${pad(days)}D ${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+
+    if (birthday) {
+      el.textContent = `HBD ✦ ${years}Y ${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+      if (!birthdayActivated) { activateBirthday(); birthdayActivated = true; }
+    } else {
+      el.textContent = `${years}Y ${pad(months)}M ${pad(days)}D ${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+    }
   };
 
   update();
   setInterval(update, 1000);
+}
+
+function spawnBirthdayParticles() {
+  const colors = ['#00d4ff', '#7b2fff', '#ff2fff', '#ffdd00', '#00ff88'];
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('span');
+    p.className = 'bday-particle';
+    p.style.cssText = `
+      left:${Math.random() * 100}vw;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      width:${4 + Math.random() * 6}px;
+      height:${4 + Math.random() * 6}px;
+      animation-delay:${Math.random() * 1.5}s;
+      animation-duration:${2 + Math.random() * 2}s;
+    `;
+    document.body.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
 }
 
 /* ═══════════════════════════════════════════════════
