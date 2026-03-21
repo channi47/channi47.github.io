@@ -1297,3 +1297,116 @@ section:not(#hero) {
   .game-card { grid-template-columns: 1fr; }
   .game-screen { min-height: 280px; }
 }
+
+/* ═══════════════════════════════════════════════════
+   FAVORITE GAMES
+═══════════════════════════════════════════════════ */
+.fav-games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  max-width: 640px;
+}
+
+.fav-game-card {
+  border: 1px solid var(--void-border2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--void-surface);
+  transition: border-color var(--t-med), transform var(--t-med), box-shadow var(--t-med);
+}
+.fav-game-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 212, 255, 0.12);
+}
+
+/* Cover area — fixed aspect ratio */
+.fav-game-cover {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+}
+.fav-game-img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+.fav-game-card:hover .fav-game-img { transform: scale(1.06); }
+
+/* CSS gradient fallback (shown under the image; visible if image fails) */
+.fav-game-cover-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.pubg-bg {
+  background: linear-gradient(160deg, #1a0f00 0%, #3d1f00 50%, #c26a00 100%);
+}
+.valorant-bg {
+  background: linear-gradient(160deg, #0d0014 0%, #1a0025 50%, #ff4655 100%);
+}
+
+/* Overlay: gradient + badge */
+.fav-game-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(5,5,8,0.92) 0%, transparent 55%);
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0.6rem;
+}
+.fav-badge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  color: var(--cyan);
+  border: 1px solid rgba(0,212,255,0.5);
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  background: rgba(0,212,255,0.08);
+}
+
+/* Body below cover */
+.fav-game-body {
+  padding: 0.85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.fav-game-dev {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+.fav-game-name {
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.08em;
+}
+.fav-game-alias {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--cyan);
+  opacity: 0.6;
+  letter-spacing: 0.1em;
+}
+.fav-game-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .fav-games-grid { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+}
