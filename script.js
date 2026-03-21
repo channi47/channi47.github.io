@@ -249,9 +249,9 @@ function initScrollEffects() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          entry.target.querySelectorAll('.stat-number').forEach(el => {
+          entry.target.querySelectorAll('.stat-number').forEach((el, i) => {
             const target = parseInt(el.dataset.target, 10);
-            countUp(el, target);
+            countUp(el, target, 1800, i * 100 + 120);
           });
         } else {
           entry.target.classList.remove('visible');
@@ -266,22 +266,26 @@ function initScrollEffects() {
   }
 }
 
-function countUp(el, target, duration = 1800) {
+function countUp(el, target, duration = 1800, delay = 0) {
   el._countId = (el._countId || 0) + 1;
   const id = el._countId;
-  const start = performance.now();
-  const update = (now) => {
-    if (el._countId !== id) return; // cancelled by re-scroll
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.floor(eased * target);
-    if (progress < 1) {
-      requestAnimationFrame(update);
-    } else {
-      el.textContent = target + '+';
-    }
-  };
-  requestAnimationFrame(update);
+  setTimeout(() => {
+    if (el._countId !== id) return; // cancelled during delay
+    const start = performance.now();
+    const update = (now) => {
+      if (el._countId !== id) return; // cancelled by re-scroll
+      const progress = Math.min((now - start) / duration, 1);
+      // ease-out expo: rockets up then glides smoothly to target
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target + '+';
+      }
+    };
+    requestAnimationFrame(update);
+  }, delay);
 }
 
 /* ═══════════════════════════════════════════════════
