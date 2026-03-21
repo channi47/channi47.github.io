@@ -331,8 +331,8 @@ function initHUDClock() {
   const startTime = Date.now();
 
   const update = () => {
-    // HUD: current time
-    const now = new Date();
+    // HUD: current time (KST, UTC+9)
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
     const hh = String(now.getHours()).padStart(2, '0');
     const mm = String(now.getMinutes()).padStart(2, '0');
     const ss = String(now.getSeconds()).padStart(2, '0');
