@@ -1,0 +1,406 @@
+/* ═══════════════════════════════════════════════════
+   NEURAL PARTICLE NETWORK
+═══════════════════════════════════════════════════ */
+class Particle {
+  constructor(canvas, isMobile) {
+    this.canvas = canvas;
+    this.isMobile = isMobile;
+    this.spawn();
+  }
+
+  spawn() {
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.baseX = this.x;
+    this.baseY = this.y;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.radius = 1.2 + Math.random() * 1.8;
+    this.opacity = 0.35 + Math.random() * 0.55;
+    this.pulseOffset = Math.random() * Math.PI * 2;
+    // 75% cyan, 25% violet
+    this.isCyan = Math.random() < 0.75;
+    this.color = this.isCyan ? '0,212,255' : '123,47,255';
+  }
+
+  update(mouse, time) {
+    // Mouse repulsion
+    if (mouse.x !== null && mouse.y !== null) {
+      const dx = this.x - mouse.x;
+      const dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const REPEL = this.isMobile ? 80 : 130;
+      if (dist < REPEL && dist > 0) {
+        const force = (REPEL - dist) / REPEL;
+        const strength = force * force * (this.isMobile ? 0.6 : 1.0);
+        this.vx += (dx / dist) * strength;
+        this.vy += (dy / dist) * strength;
+      }
+    }
+
+    // Gentle pull toward base position (prevents drifting off-screen)
+    this.vx += (this.baseX - this.x) * 0.0018;
+    this.vy += (this.baseY - this.y) * 0.0018;
+
+    // Damping
+    this.vx *= 0.94;
+    this.vy *= 0.94;
+
+    // Clamp velocity
+    const maxV = 3.5;
+    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+    if (speed > maxV) {
+      this.vx = (this.vx / speed) * maxV;
+      this.vy = (this.vy / speed) * maxV;
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Pulse opacity
+    this.currentOpacity = this.opacity + Math.sin(time * 0.0008 + this.pulseOffset) * 0.15;
+    this.currentOpacity = Math.max(0.1, Math.min(1, this.currentOpacity));
+  }
+
+  draw(ctx) {
+    const r = this.radius;
+    const op = this.currentOpacity;
+
+    // Outer glow
+    const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, r * 5);
+    glow.addColorStop(0, `rgba(${this.color},${op * 0.7})`);
+    glow.addColorStop(0.4, `rgba(${this.color},${op * 0.2})`);
+    glow.addColorStop(1, `rgba(${this.color},0)`);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, r * 5, 0, Math.PI * 2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+
+    // Core particle
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color},${op})`;
+    ctx.fill();
+  }
+}
+
+class NeuralNet {
+  constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+    this.particles = [];
+    this.mouse = { x: null, y: null };
+    this.animId = null;
+    this.time = 0;
+    this.isMobile = window.innerWidth < 768;
+    this.PARTICLE_COUNT = this.isMobile ? 80 : 180;
+    this.CONNECT_DIST = this.isMobile ? 100 : 145;
+  }
+
+  init() {
+    this._resize();
+    this._spawnParticles();
+    this._bindEvents();
+    this._loop();
+  }
+
+  _resize() {
+    const parent = this.canvas.parentElement;
+    this.canvas.width = parent.offsetWidth;
+    this.canvas.height = parent.offsetHeight;
+  }
+
+  _spawnParticles() {
+    this.particles = [];
+    for (let i = 0; i < this.PARTICLE_COUNT; i++) {
+      this.particles.push(new Particle(this.canvas, this.isMobile));
+    }
+  }
+
+  _respawn() {
+    // On resize, rebase particles proportionally
+    const scaleX = this.canvas.width  / (this._prevW || this.canvas.width);
+    const scaleY = this.canvas.height / (this._prevH || this.canvas.height);
+    this.particles.forEach(p => {
+      p.baseX *= scaleX;
+      p.baseY *= scaleY;
+      p.x = p.baseX;
+      p.y = p.baseY;
+    });
+    this._prevW = this.canvas.width;
+    this._prevH = this.canvas.height;
+  }
+
+  _bindEvents() {
+    const rect = () => this.canvas.getBoundingClientRect();
+
+    this.canvas.addEventListener('mousemove', e => {
+      const r = rect();
+      this.mouse.x = e.clientX - r.left;
+      this.mouse.y = e.clientY - r.top;
+    });
+    this.canvas.addEventListener('mouseleave', () => {
+      this.mouse.x = null;
+      this.mouse.y = null;
+    });
+    this.canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const r = rect();
+      this.mouse.x = e.touches[0].clientX - r.left;
+      this.mouse.y = e.touches[0].clientY - r.top;
+    }, { passive: false });
+    this.canvas.addEventListener('touchend', () => {
+      this.mouse.x = null;
+      this.mouse.y = null;
+    });
+
+    // Resize
+    this._prevW = this.canvas.width;
+    this._prevH = this.canvas.height;
+    const ro = new ResizeObserver(() => {
+      this._resize();
+      this._respawn();
+    });
+    ro.observe(this.canvas.parentElement);
+  }
+
+  _drawConnections() {
+    const ctx = this.ctx;
+    const pts = this.particles;
+    const dist = this.CONNECT_DIST;
+    const len = pts.length;
+
+    for (let i = 0; i < len; i++) {
+      for (let j = i + 1; j < len; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < dist) {
+          const alpha = Math.pow(1 - d / dist, 1.8) * 0.55;
+          const grad = ctx.createLinearGradient(pts[i].x, pts[i].y, pts[j].x, pts[j].y);
+          grad.addColorStop(0, `rgba(${pts[i].color},${alpha})`);
+          grad.addColorStop(1, `rgba(${pts[j].color},${alpha})`);
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = alpha * 1.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  _loop() {
+    this.animId = requestAnimationFrame(() => this._loop());
+    this.time++;
+
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.particles.forEach(p => p.update(this.mouse, this.time));
+    this._drawConnections();
+    this.particles.forEach(p => p.draw(ctx));
+  }
+
+  destroy() {
+    cancelAnimationFrame(this.animId);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLL EFFECTS
+═══════════════════════════════════════════════════ */
+function initScrollEffects() {
+  // Section reveal
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // Skill bars
+  const skillsGrid = document.querySelector('.skills-grid');
+  if (skillsGrid) {
+    const skillObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-fill').forEach(bar => {
+            bar.classList.add('animate');
+          });
+          skillObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    skillObs.observe(skillsGrid);
+  }
+
+  // Stat counters
+  const statsSection = document.querySelector('.about-stats');
+  if (statsSection) {
+    const statObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.stat-number').forEach(el => {
+            const target = parseInt(el.dataset.target, 10);
+            countUp(el, target);
+          });
+          statObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    statObs.observe(statsSection);
+  }
+}
+
+function countUp(el, target, duration = 1800) {
+  const start = performance.now();
+  const update = (now) => {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target);
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = target + '+';
+    }
+  };
+  requestAnimationFrame(update);
+}
+
+/* ═══════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════ */
+function initNavigation() {
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        // Close mobile nav
+        navLinks.classList.remove('open');
+        navToggle.classList.remove('open');
+      }
+    });
+  });
+
+  // Mobile toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('nav-links');
+  navToggle?.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+
+  // Navbar scroll state
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  // Active nav link tracking
+  const sections = document.querySelectorAll('section[id]');
+  const navAnchors = document.querySelectorAll('.nav-link');
+  const sectionObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navAnchors.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === `#${entry.target.id}`);
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => sectionObs.observe(s));
+}
+
+/* ═══════════════════════════════════════════════════
+   HUD CLOCK
+═══════════════════════════════════════════════════ */
+function initHUDClock() {
+  const hudTime = document.getElementById('hud-time');
+  const footerUptime = document.getElementById('footer-uptime');
+  const startTime = Date.now();
+
+  const update = () => {
+    // HUD: current time
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    if (hudTime) hudTime.textContent = `${hh}:${mm}:${ss}`;
+
+    // Footer: uptime since page load
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const uh = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+    const um = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+    const us = String(elapsed % 60).padStart(2, '0');
+    if (footerUptime) footerUptime.textContent = `${uh}:${um}:${us}`;
+  };
+
+  update();
+  setInterval(update, 1000);
+}
+
+/* ═══════════════════════════════════════════════════
+   HUD MOUSE COORDS
+═══════════════════════════════════════════════════ */
+function initHUDCoords() {
+  const label = document.querySelector('.hud-tl .hud-label');
+  if (!label) return;
+  document.addEventListener('mousemove', e => {
+    const x = String(Math.round(e.clientX)).padStart(4, '0');
+    const y = String(Math.round(e.clientY)).padStart(4, '0');
+    label.textContent = `X:${x} Y:${y}`;
+  }, { passive: true });
+}
+
+/* ═══════════════════════════════════════════════════
+   CONTACT FORM
+═══════════════════════════════════════════════════ */
+function initContactForm() {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span>TRANSMITTED ✓</span>';
+    btn.style.borderColor = '#00ff88';
+    btn.style.color = '#00ff88';
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.style.borderColor = '';
+      btn.style.color = '';
+      form.reset();
+    }, 3000);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Delay observers slightly so elements in initial viewport animate in
+  setTimeout(() => {
+    initScrollEffects();
+  }, 120);
+
+  initNavigation();
+  initHUDClock();
+  initHUDCoords();
+  initContactForm();
+
+  // Start neural net
+  const net = new NeuralNet('neural-canvas');
+  net.init();
+});

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Personal website — developer, builder, explorer." />
+  <title>YOUR NAME // PORTFOLIO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════ NAV ═══════════════════ -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <span class="nav-logo-bracket">[</span>
+      SYS<span class="nav-logo-accent">://</span>USER
+      <span class="nav-logo-bracket">]</span>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#about" class="nav-link">01.ABOUT</a></li>
+      <li><a href="#skills" class="nav-link">02.SKILLS</a></li>
+      <li><a href="#work" class="nav-link">03.WORK</a></li>
+      <li><a href="#contact" class="nav-link">04.CONTACT</a></li>
+    </ul>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-text">ONLINE</span>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════ HERO ═══════════════════ -->
+  <section id="hero">
+    <canvas id="neural-canvas"></canvas>
+
+    <!-- HUD corners -->
+    <div class="hud hud-tl">
+      <div class="hud-line hud-h"></div>
+      <div class="hud-line hud-v"></div>
+      <span class="hud-label">X:0000 Y:0000</span>
+    </div>
+    <div class="hud hud-tr">
+      <div class="hud-line hud-h"></div>
+      <div class="hud-line hud-v"></div>
+      <span class="hud-label">SYS.ACTIVE</span>
+    </div>
+    <div class="hud hud-bl">
+      <div class="hud-line hud-h"></div>
+      <div class="hud-line hud-v"></div>
+      <span class="hud-label">NET.LINK ██</span>
+    </div>
+    <div class="hud hud-br">
+      <div class="hud-line hud-h"></div>
+      <div class="hud-line hud-v"></div>
+      <span class="hud-label" id="hud-time">00:00:00</span>
+    </div>
+
+    <!-- Scanning line -->
+    <div class="scan-line"></div>
+
+    <div class="hero-content">
+      <div class="hero-label">
+        <span class="hero-label-line"></span>
+        <span>// INITIALIZING PROFILE</span>
+        <span class="cursor-blink">_</span>
+      </div>
+      <h1 class="hero-name glitch" data-text="YOUR NAME">YOUR NAME</h1>
+      <p class="hero-tagline">
+        <span class="tag-item">Full-Stack Engineer</span>
+        <span class="tag-sep">·</span>
+        <span class="tag-item">AI Enthusiast</span>
+        <span class="tag-sep">·</span>
+        <span class="tag-item">Builder</span>
+      </p>
+      <p class="hero-desc">
+        코드로 아이디어를 현실로 만드는 개발자.<br />
+        심우주처럼 깊은 기술과 별처럼 빛나는 결과물을 추구합니다.
+      </p>
+      <div class="hero-cta-group">
+        <a href="#work" class="btn-primary">
+          <span>EXPLORE WORK</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </a>
+        <a href="#contact" class="btn-ghost">CONTACT</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>SCROLL</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ ABOUT ═══════════════════ -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-index">01</span>
+        <h2 class="section-title">ABOUT</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card card reveal">
+          <div class="card-tag">// BIO</div>
+          <p>
+            안녕하세요. 저는 <strong>YOUR NAME</strong>입니다.
+            웹과 AI 기술을 결합하여 사람들의 경험을 바꾸는 서비스를 만드는 것을 좋아합니다.
+          </p>
+          <p>
+            프론트엔드부터 백엔드, 클라우드 인프라까지 풀스택 개발 경험을 보유하고 있으며,
+            새로운 기술을 탐구하고 어려운 문제를 해결하는 데서 큰 즐거움을 느낍니다.
+          </p>
+          <p>
+            코드 외에는 우주론 책을 읽거나, 신디사이저를 만지거나, 커피를 과학적으로 탐구합니다.
+          </p>
+          <div class="about-links">
+            <a href="#" class="about-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              GitHub
+            </a>
+            <a href="#" class="about-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
+          </div>
+        </div>
+
+        <div class="about-stats reveal">
+          <div class="stat-card card">
+            <div class="stat-number" data-target="3">0</div>
+            <div class="stat-label">YEARS EXP</div>
+            <div class="stat-bar"></div>
+          </div>
+          <div class="stat-card card">
+            <div class="stat-number" data-target="24">0</div>
+            <div class="stat-label">PROJECTS</div>
+            <div class="stat-bar"></div>
+          </div>
+          <div class="stat-card card">
+            <div class="stat-number" data-target="8">0</div>
+            <div class="stat-label">TECH STACK</div>
+            <div class="stat-bar"></div>
+          </div>
+          <div class="stat-card card">
+            <div class="stat-number" data-target="100">0</div>
+            <div class="stat-label">COMMITS/MO</div>
+            <div class="stat-bar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ SKILLS ═══════════════════ -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-index">02</span>
+        <h2 class="section-title">SKILLS</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="skills-grid reveal">
+        <div class="skill-category card">
+          <div class="card-tag">// LANGUAGES</div>
+          <div class="skill-list">
+            <div class="skill-item">
+              <div class="skill-meta"><span>JavaScript</span><span>90%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 90%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>TypeScript</span><span>82%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 82%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Python</span><span>78%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 78%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Rust</span><span>45%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 45%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category card">
+          <div class="card-tag">// FRAMEWORKS</div>
+          <div class="skill-list">
+            <div class="skill-item">
+              <div class="skill-meta"><span>React / Next.js</span><span>88%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 88%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Node.js</span><span>85%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 85%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>FastAPI</span><span>72%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 72%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Three.js</span><span>60%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 60%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category card">
+          <div class="card-tag">// TOOLS</div>
+          <div class="skill-list">
+            <div class="skill-item">
+              <div class="skill-meta"><span>Git / GitHub</span><span>92%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 92%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Docker</span><span>75%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 75%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>PostgreSQL</span><span>70%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 70%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Figma</span><span>65%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 65%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category card">
+          <div class="card-tag">// AI / CLOUD</div>
+          <div class="skill-list">
+            <div class="skill-item">
+              <div class="skill-meta"><span>Claude API</span><span>80%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 80%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>AWS</span><span>68%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 68%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>Vercel / Edge</span><span>85%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 85%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-meta"><span>LLM Fine-tuning</span><span>55%</span></div>
+              <div class="skill-track"><div class="skill-fill" style="--skill-level: 55%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ WORK ═══════════════════ -->
+  <section id="work">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-index">03</span>
+        <h2 class="section-title">WORK</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="projects-grid">
+        <article class="project-card card reveal">
+          <div class="project-header">
+            <div class="project-icon">◈</div>
+            <div class="project-links">
+              <a href="#" class="project-link" title="GitHub">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="project-link" title="Live">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="project-title">Nebula Chat</h3>
+          <p class="project-desc">실시간 AI 대화 인터페이스. WebSocket과 Claude API를 결합한 스트리밍 응답 시스템.</p>
+          <div class="project-tags">
+            <span class="tag">Next.js</span>
+            <span class="tag">Claude API</span>
+            <span class="tag">WebSocket</span>
+          </div>
+        </article>
+
+        <article class="project-card card reveal">
+          <div class="project-header">
+            <div class="project-icon">◇</div>
+            <div class="project-links">
+              <a href="#" class="project-link" title="GitHub">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="project-link" title="Live">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="project-title">Void Dashboard</h3>
+          <p class="project-desc">서버 모니터링 대시보드. 실시간 메트릭 시각화와 이상 감지 알고리즘 내장.</p>
+          <div class="project-tags">
+            <span class="tag">React</span>
+            <span class="tag">Python</span>
+            <span class="tag">Grafana</span>
+          </div>
+        </article>
+
+        <article class="project-card card reveal">
+          <div class="project-header">
+            <div class="project-icon">◉</div>
+            <div class="project-links">
+              <a href="#" class="project-link" title="GitHub">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="project-link" title="Live">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="project-title">Stellar Code</h3>
+          <p class="project-desc">AI 기반 코드 리뷰 도구. PR 자동 분석과 개선 제안을 GitHub Actions로 통합.</p>
+          <div class="project-tags">
+            <span class="tag">TypeScript</span>
+            <span class="tag">GitHub API</span>
+            <span class="tag">LLM</span>
+          </div>
+        </article>
+
+        <article class="project-card card reveal">
+          <div class="project-header">
+            <div class="project-icon">⬡</div>
+            <div class="project-links">
+              <a href="#" class="project-link" title="GitHub">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="project-link" title="Live">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="project-title">Photon Store</h3>
+          <p class="project-desc">엣지 컴퓨팅 기반 이커머스 플랫폼. 전 세계 50ms 이하 응답속도 달성.</p>
+          <div class="project-tags">
+            <span class="tag">Next.js</span>
+            <span class="tag">Edge Runtime</span>
+            <span class="tag">Stripe</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ CONTACT ═══════════════════ -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-index">04</span>
+        <h2 class="section-title">CONTACT</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="contact-container">
+        <div class="contact-left reveal">
+          <p class="contact-tagline">Let's build<br /><span class="gradient-text">something great.</span></p>
+          <p class="contact-desc">
+            새로운 프로젝트, 협업 제안, 또는 그냥 안녕하세요 한 마디도 환영합니다.
+            메시지를 남겨주시면 빠르게 답장드리겠습니다.
+          </p>
+          <div class="contact-social">
+            <a href="mailto:hello@example.com" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <span>hello@example.com</span>
+            </a>
+            <a href="#" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              <span>github.com/username</span>
+            </a>
+          </div>
+        </div>
+
+        <form class="contact-form card reveal" id="contact-form">
+          <div class="card-tag">// SEND MESSAGE</div>
+          <div class="form-group">
+            <label for="name">NAME</label>
+            <input type="text" id="name" name="name" placeholder="Your name" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="email">EMAIL</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" />
+          </div>
+          <div class="form-group">
+            <label for="message">MESSAGE</label>
+            <textarea id="message" name="message" rows="5" placeholder="What's on your mind?"></textarea>
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <span>TRANSMIT</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ FOOTER ═══════════════════ -->
+  <footer id="footer">
+    <div class="container footer-inner">
+      <span class="footer-copy">© 2026 · YOUR NAME · Built in the void</span>
+      <span class="footer-coords">
+        <span class="footer-label">SYS://</span>UPTIME <span id="footer-uptime">00:00:00</span>
+      </span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
