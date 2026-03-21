@@ -1816,3 +1816,19 @@ section:not(#hero) {
   text-align: right;
   flex-shrink: 0;
 }
+
+/* ── Contact Form Validation ── */
+.form-group input.field-error,
+.form-group textarea.field-error {
+  border-color: #ff4444 !important;
+  box-shadow: 0 0 8px rgba(255, 68, 68, 0.3);
+}
+
+@keyframes btn-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+.btn-shake { animation: btn-shake 0.45s ease; }

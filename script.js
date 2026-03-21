@@ -370,19 +370,93 @@ function initContactForm() {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
-  form.addEventListener('submit', e => {
+  const WEBHOOK = 'https://discord.com/api/webhooks/1484926426766639256/6d0Akzrn5i7PAy94a2cPP18ZvehEg10tn41tAzixNfyDebsJlEW4LBumG5yl3W_FNQtA';
+
+  // Real-time validation — shake empty fields on input blur
+  const inputs = form.querySelectorAll('input, textarea');
+  inputs.forEach(el => {
+    el.addEventListener('blur', () => validateField(el));
+    el.addEventListener('input', () => {
+      if (el.value.trim()) el.classList.remove('field-error');
+    });
+  });
+
+  function validateField(el) {
+    const empty = !el.value.trim();
+    el.classList.toggle('field-error', empty);
+    return !empty;
+  }
+
+  form.addEventListener('submit', async e => {
     e.preventDefault();
+
+    // Validate all fields
+    let valid = true;
+    inputs.forEach(el => { if (!validateField(el)) valid = false; });
+    if (!valid) {
+      // Shake the button
+      const btn = form.querySelector('button[type="submit"]');
+      btn.classList.add('btn-shake');
+      setTimeout(() => btn.classList.remove('btn-shake'), 500);
+      return;
+    }
+
     const btn = form.querySelector('button[type="submit"]');
     const original = btn.innerHTML;
-    btn.innerHTML = '<span>TRANSMITTED ✓</span>';
-    btn.style.borderColor = '#00ff88';
-    btn.style.color = '#00ff88';
-    setTimeout(() => {
-      btn.innerHTML = original;
-      btn.style.borderColor = '';
-      btn.style.color = '';
-      form.reset();
-    }, 3000);
+    btn.disabled = true;
+    btn.innerHTML = '<span>TRANSMITTING...</span>';
+
+    const name    = form.querySelector('#name').value.trim();
+    const email   = form.querySelector('#email').value.trim();
+    const message = form.querySelector('#message').value.trim();
+
+    const payload = {
+      embeds: [{
+        title: '📨 새 메시지 도착',
+        color: 0x00d4ff,
+        fields: [
+          { name: 'NAME',    value: name,    inline: true },
+          { name: 'EMAIL',   value: email,   inline: true },
+          { name: 'MESSAGE', value: message, inline: false },
+        ],
+        timestamp: new Date().toISOString(),
+        footer: { text: 'channi47.github.io — CONTACT FORM' },
+      }],
+    };
+
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        btn.innerHTML = '<span>TRANSMITTED ✓</span>';
+        btn.style.borderColor = '#00ff88';
+        btn.style.color = '#00ff88';
+        form.reset();
+        inputs.forEach(el => el.classList.remove('field-error'));
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+          btn.disabled = false;
+        }, 3000);
+      } else {
+        throw new Error('webhook failed');
+      }
+    } catch {
+      btn.innerHTML = '<span>ERROR — RETRY</span>';
+      btn.style.borderColor = '#ff4444';
+      btn.style.color = '#ff4444';
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.borderColor = '';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
+    }
   });
 }
 
