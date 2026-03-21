@@ -214,45 +214,51 @@ class NeuralNet {
    SCROLL EFFECTS
 ═══════════════════════════════════════════════════ */
 function initScrollEffects() {
-  // Section reveal
+  // Section reveal — remove visible when out of view so animation replays
   const revealObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-        revealObs.unobserve(entry.target);
+      } else {
+        entry.target.classList.remove('visible');
       }
     });
   }, { threshold: 0.12 });
 
   document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-  // Skill bars
+  // Skill bars — replay on re-scroll
   const skillsGrid = document.querySelector('.skills-grid');
   if (skillsGrid) {
     const skillObs = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.querySelectorAll('.skill-fill').forEach(bar => {
-            bar.classList.add('animate');
-          });
-          skillObs.unobserve(entry.target);
+          entry.target.querySelectorAll('.skill-fill').forEach(bar => bar.classList.add('animate'));
+        } else {
+          entry.target.querySelectorAll('.skill-fill').forEach(bar => bar.classList.remove('animate'));
         }
       });
     }, { threshold: 0.2 });
     skillObs.observe(skillsGrid);
   }
 
-  // Stat counters
+  // Stat counters — replay on re-scroll
   const statsSection = document.querySelector('.about-stats');
   if (statsSection) {
     const statObs = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
           entry.target.querySelectorAll('.stat-number').forEach(el => {
             const target = parseInt(el.dataset.target, 10);
             countUp(el, target);
           });
-          statObs.unobserve(entry.target);
+        } else {
+          entry.target.classList.remove('visible');
+          entry.target.querySelectorAll('.stat-number').forEach(el => {
+            el._countId = (el._countId || 0) + 1; // cancel in-flight animation
+            el.textContent = '0';
+          });
         }
       });
     }, { threshold: 0.3 });
@@ -261,8 +267,11 @@ function initScrollEffects() {
 }
 
 function countUp(el, target, duration = 1800) {
+  el._countId = (el._countId || 0) + 1;
+  const id = el._countId;
   const start = performance.now();
   const update = (now) => {
+    if (el._countId !== id) return; // cancelled by re-scroll
     const progress = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.floor(eased * target);
