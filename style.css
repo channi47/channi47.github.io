@@ -1366,6 +1366,9 @@ section:not(#hero) {
 .valorant-bg {
   background: linear-gradient(160deg, #0d0014 0%, #1a0025 50%, #ff4655 100%);
 }
+.minecraft-bg {
+  background: linear-gradient(160deg, #0a1a00 0%, #1a3d00 50%, #5a9e1a 100%);
+}
 
 /* Overlay: gradient + badge */
 .fav-game-overlay {
