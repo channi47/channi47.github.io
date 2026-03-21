@@ -397,8 +397,8 @@ function initAgeClock() {
   const pad = (n, len = 2) => String(n).padStart(len, '0');
 
   const isBirthday = () => {
-    const now = new Date();
-    return now.getMonth() === 3 && now.getDate() === 7; // April 7
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+    return now.getMonth() === 3 && now.getDate() === 7; // April 7 (KST)
   };
 
   const activateBirthday = () => {
