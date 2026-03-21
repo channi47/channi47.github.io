@@ -1310,11 +1310,15 @@ section:not(#hero) {
 }
 
 .fav-game-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
   border: 1px solid var(--void-border2);
   border-radius: 4px;
   overflow: hidden;
   background: var(--void-surface);
   transition: border-color var(--t-med), transform var(--t-med), box-shadow var(--t-med);
+  cursor: pointer;
 }
 .fav-game-card:hover {
   border-color: var(--cyan);
