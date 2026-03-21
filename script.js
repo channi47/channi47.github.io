@@ -326,8 +326,9 @@ function initNavigation() {
 
   // Mobile toggle
   navToggle?.addEventListener('click', () => {
-    navToggle.classList.toggle('open');
+    const isOpen = navToggle.classList.toggle('open');
     navLinks.classList.toggle('open');
+    if (isOpen) SFX.navOpen(); else SFX.navClose();
   });
 
   // Smooth scroll + close mobile nav on link click
@@ -440,6 +441,7 @@ function initContactForm() {
       const btn = form.querySelector('button[type="submit"]');
       btn.classList.add('btn-shake');
       setTimeout(() => btn.classList.remove('btn-shake'), 500);
+      SFX.error();
       return;
     }
 
@@ -474,6 +476,7 @@ function initContactForm() {
       });
 
       if (res.ok) {
+        SFX.success();
         btn.innerHTML = '<span>TRANSMITTED ✓</span>';
         btn.style.borderColor = '#00ff88';
         btn.style.color = '#00ff88';
@@ -489,6 +492,7 @@ function initContactForm() {
         throw new Error('webhook failed');
       }
     } catch {
+      SFX.error();
       btn.innerHTML = '<span>ERROR — RETRY</span>';
       btn.style.borderColor = '#ff4444';
       btn.style.color = '#ff4444';
@@ -767,6 +771,138 @@ function initMusicPlayer() {
 }
 
 /* ═══════════════════════════════════════════════════
+   SCI-FI SOUND ENGINE (Web Audio API)
+═══════════════════════════════════════════════════ */
+const SFX = (() => {
+  let ctx = null;
+  let lastHover = 0;
+
+  const getCtx = () => {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+
+  const play = (fn) => { try { fn(getCtx()); } catch (e) {} };
+
+  // Very subtle hover blip
+  const hover = () => {
+    const now = Date.now();
+    if (now - lastHover < 90) return;
+    lastHover = now;
+    play(c => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.frequency.setValueAtTime(1600, c.currentTime);
+      o.frequency.exponentialRampToValueAtTime(900, c.currentTime + 0.055);
+      g.gain.setValueAtTime(0.045, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.055);
+      o.start(c.currentTime); o.stop(c.currentTime + 0.055);
+    });
+  };
+
+  // Click / select — short square descend
+  const click = () => play(c => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = 'square';
+    o.frequency.setValueAtTime(700, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(180, c.currentTime + 0.1);
+    g.gain.setValueAtTime(0.09, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.1);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.1);
+  });
+
+  // Section scan reveal — ascending sine sweep
+  const reveal = () => play(c => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.setValueAtTime(280, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(860, c.currentTime + 0.28);
+    g.gain.setValueAtTime(0.04, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.28);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.28);
+  });
+
+  // Form success — ascending 3-note arpeggio (C5 E5 G5)
+  const success = () => play(c => {
+    [523, 659, 784].forEach((freq, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.frequency.value = freq;
+      const t = c.currentTime + i * 0.13;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.11, t + 0.025);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      o.start(t); o.stop(t + 0.22);
+    });
+  });
+
+  // Form error — sawtooth descend buzz
+  const error = () => play(c => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(420, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(75, c.currentTime + 0.18);
+    g.gain.setValueAtTime(0.09, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.18);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.18);
+  });
+
+  // Nav menu open — quick sweep up
+  const navOpen = () => play(c => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.setValueAtTime(180, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(620, c.currentTime + 0.14);
+    g.gain.setValueAtTime(0.07, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.14);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.14);
+  });
+
+  // Nav menu close — sweep down
+  const navClose = () => play(c => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.setValueAtTime(620, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(180, c.currentTime + 0.14);
+    g.gain.setValueAtTime(0.07, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.14);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.14);
+  });
+
+  return { hover, click, reveal, success, error, navOpen, navClose };
+})();
+
+function initSoundEffects() {
+  // Hover + click sounds on all interactive elements
+  const hoverTargets = [
+    '.nav-link', '.about-link', '.social-link', '.project-link',
+    '.project-card', '.btn-primary', '.btn-outline', '.play-btn',
+    '#play-btn', '.vol-icon-btn',
+  ];
+  hoverTargets.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      el.addEventListener('mouseenter', () => SFX.hover(), { passive: true });
+      el.addEventListener('click', () => SFX.click(), { passive: true });
+    });
+  });
+
+  // Section reveal sounds (only once per section entering view)
+  const revealedSections = new WeakSet();
+  const secObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !revealedSections.has(entry.target)) {
+        revealedSections.add(entry.target);
+        SFX.reveal();
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('section[id]').forEach(s => secObs.observe(s));
+}
+
+/* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -783,6 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHUDCoords();
   initContactForm();
   initMusicPlayer();
+  initSoundEffects();
 
   // Start neural net
   const net = new NeuralNet('neural-canvas');
