@@ -1753,16 +1753,16 @@ section:not(#hero) {
 .player-bottom-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  flex-wrap: wrap;
 }
 
 .volume-wrap {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  flex: 1;
-  min-width: 120px;
+  width: 130px;
+  flex-shrink: 0;
 }
 
 .vol-icon-btn {
