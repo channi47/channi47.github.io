@@ -393,7 +393,7 @@ function initAgeClock() {
   const el = document.getElementById('age-counter');
   if (!el) return;
 
-  const BIRTH = new Date('2006-04-07T00:00:00');
+  const BIRTH = new Date('2006-04-07T00:00:00+09:00'); // KST midnight
   const pad = (n, len = 2) => String(n).padStart(len, '0');
 
   const isBirthday = () => {
