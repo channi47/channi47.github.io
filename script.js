@@ -279,26 +279,26 @@ function countUp(el, target, duration = 1800) {
    NAVIGATION
 ═══════════════════════════════════════════════════ */
 function initNavigation() {
-  // Smooth scroll
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('nav-links');
+
+  // Mobile toggle
+  navToggle?.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+
+  // Smooth scroll + close mobile nav on link click
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
       if (target) {
         e.preventDefault();
         target.scrollIntoView({ behavior: 'smooth' });
-        // Close mobile nav
-        navLinks.classList.remove('open');
-        navToggle.classList.remove('open');
+        navLinks?.classList.remove('open');
+        navToggle?.classList.remove('open');
       }
     });
-  });
-
-  // Mobile toggle
-  const navToggle = document.getElementById('nav-toggle');
-  const navLinks = document.getElementById('nav-links');
-  navToggle?.addEventListener('click', () => {
-    navToggle.classList.toggle('open');
-    navLinks.classList.toggle('open');
   });
 
   // Navbar scroll state
@@ -387,6 +387,36 @@ function initContactForm() {
 }
 
 /* ═══════════════════════════════════════════════════
+   AGE COUNTER (born 2006.04.07)
+═══════════════════════════════════════════════════ */
+function initAgeClock() {
+  const el = document.getElementById('age-counter');
+  if (!el) return;
+
+  const BIRTH = new Date('2006-04-07T00:00:00');
+  const pad = (n, len = 2) => String(n).padStart(len, '0');
+
+  const update = () => {
+    let ms = Date.now() - BIRTH.getTime();
+    const years  = Math.floor(ms / (365.25 * 24 * 3600 * 1000));
+    ms -= years * 365.25 * 24 * 3600 * 1000;
+    const months = Math.floor(ms / (30.44 * 24 * 3600 * 1000));
+    ms -= months * 30.44 * 24 * 3600 * 1000;
+    const days   = Math.floor(ms / (24 * 3600 * 1000));
+    ms -= days   * 24 * 3600 * 1000;
+    const hours  = Math.floor(ms / (3600 * 1000));
+    ms -= hours  * 3600 * 1000;
+    const mins   = Math.floor(ms / 60000);
+    const secs   = Math.floor((ms - mins * 60000) / 1000);
+    el.textContent =
+      `${years}Y ${pad(months)}M ${pad(days)}D ${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+  };
+
+  update();
+  setInterval(update, 1000);
+}
+
+/* ═══════════════════════════════════════════════════
    SCROLL PROGRESS BAR
 ═══════════════════════════════════════════════════ */
 function initScrollProgress() {
@@ -430,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 120);
 
   initNavigation();
+  initAgeClock();
   initScrollProgress();
   initParallax();
   initHUDClock();
