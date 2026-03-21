@@ -254,10 +254,28 @@ function initScrollEffects() {
             if (raw === '∞') {
               el._countId = (el._countId || 0) + 1;
               const id = el._countId;
+              const duration = 1800;
               setTimeout(() => {
                 if (el._countId !== id) return;
-                el.textContent = '∞';
-                el.classList.add('stat-infinity-pop');
+                const start = performance.now();
+                const overflow = [9999, 99999, 999999];
+                const update = (now) => {
+                  if (el._countId !== id) return;
+                  const p = Math.min((now - start) / duration, 1);
+                  if (p < 0.8) {
+                    // ease-in: accelerating 0 → 999
+                    el.textContent = Math.round(Math.pow(p / 0.8, 2) * 999);
+                  } else if (p < 0.97) {
+                    // overflow flash
+                    el.textContent = overflow[Math.floor(Math.random() * overflow.length)];
+                  } else {
+                    el.textContent = '∞';
+                    el.classList.add('stat-infinity-pop');
+                    return;
+                  }
+                  requestAnimationFrame(update);
+                };
+                requestAnimationFrame(update);
               }, i * 100 + 120);
             } else {
               countUp(el, parseInt(raw, 10), 1800, i * 100 + 120);
