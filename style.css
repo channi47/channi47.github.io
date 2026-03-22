@@ -416,7 +416,7 @@ section:not(#hero) {
   z-index: 2;
   pointer-events: none;
 }
-.hud-tl { top: 28px; left: 28px; }
+.hud-tl { top: 28px; left: 28px; pointer-events: auto; cursor: pointer; }
 .hud-tr { top: 28px; right: 28px; }
 .hud-bl { bottom: 28px; left: 28px; }
 .hud-br { bottom: 28px; right: 28px; }

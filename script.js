@@ -1015,7 +1015,6 @@ function initEasterEggs(neuralNet) {
       }
     };
 
-    hudTl.style.cursor = 'pointer';
     hudTl.addEventListener('click', () => {
       hudClicks++;
       clearTimeout(hudTimer);
