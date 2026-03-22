@@ -940,6 +940,246 @@ function initSoundEffects() {
 }
 
 /* ═══════════════════════════════════════════════════
+   EASTER EGGS
+═══════════════════════════════════════════════════ */
+function initEasterEggs(neuralNet) {
+
+  /* ── C: 히어로 이름 3회 연타 클릭 → 초강력 글리치 ── */
+  const heroName = document.querySelector('.hero-name.glitch');
+  if (heroName) {
+    let clickTimes = [];
+    const CODE_NAMES = ['//CR-7734', 'SUBJECT_07', 'NODE_∅X', '█████████', 'ERR_IDENTITY'];
+
+    // SFX: 알람 버즈
+    const sfxGlitchBurst = () => {
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)();
+        [0, 0.07, 0.14].forEach(delay => {
+          const o = c.createOscillator(), g = c.createGain();
+          o.connect(g); g.connect(c.destination);
+          o.type = 'sawtooth';
+          o.frequency.setValueAtTime(880, c.currentTime + delay);
+          o.frequency.exponentialRampToValueAtTime(220, c.currentTime + delay + 0.12);
+          g.gain.setValueAtTime(0.12, c.currentTime + delay);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + 0.13);
+          o.start(c.currentTime + delay); o.stop(c.currentTime + delay + 0.15);
+        });
+      } catch(e) {}
+    };
+
+    heroName.addEventListener('click', () => {
+      const now = Date.now();
+      clickTimes = clickTimes.filter(t => now - t < 900);
+      clickTimes.push(now);
+
+      if (clickTimes.length >= 3) {
+        clickTimes = [];
+        const original = heroName.getAttribute('data-text');
+        const codeName = CODE_NAMES[Math.floor(Math.random() * CODE_NAMES.length)];
+
+        heroName.setAttribute('data-text', codeName);
+        heroName.classList.add('super-glitch');
+        sfxGlitchBurst();
+
+        setTimeout(() => {
+          heroName.setAttribute('data-text', original);
+          heroName.classList.remove('super-glitch');
+        }, 1800);
+      }
+    });
+  }
+
+  /* ── D: HUD 좌표 패널 5회 클릭 → 커서 추적 모드 ── */
+  const hudTl = document.querySelector('.hud-tl');
+  const hudLabel = hudTl ? hudTl.querySelector('.hud-label') : null;
+  if (hudTl && hudLabel && neuralNet) {
+    let hudClicks = 0;
+    let hudTimer = null;
+    let trackActive = false;
+
+    // 플래시 엘리먼트 생성
+    const flash = document.createElement('div');
+    flash.id = 'hud-locked-flash';
+    document.body.appendChild(flash);
+
+    const showFlash = (msg) => {
+      flash.textContent = msg;
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 1800);
+    };
+
+    // 파티클 추적 모드 토글
+    const setTrackMode = (on) => {
+      trackActive = on;
+      neuralNet.trackMode = on;
+      if (on) {
+        hudTl.classList.add('track-active');
+        showFlash('// COORDINATES LOCKED — TRACKING ACTIVE');
+      } else {
+        hudTl.classList.remove('track-active');
+        showFlash('// TRACKING DISENGAGED');
+      }
+    };
+
+    hudTl.style.cursor = 'pointer';
+    hudTl.addEventListener('click', () => {
+      hudClicks++;
+      clearTimeout(hudTimer);
+      hudTimer = setTimeout(() => { hudClicks = 0; }, 1200);
+
+      if (hudClicks >= 5) {
+        hudClicks = 0;
+        setTrackMode(!trackActive);
+      }
+    });
+  }
+
+  /* ── E: 백틱(`) 키 → 히든 미니 터미널 토글 ── */
+  // 터미널 HTML 생성
+  const terminal = document.createElement('div');
+  terminal.id = 'easter-terminal';
+  terminal.innerHTML = `
+    <div class="terminal-titlebar">
+      <div class="terminal-dot"></div>
+      <span>HYEONGCHAN-SYS v1.0 // SECURE SHELL</span>
+    </div>
+    <div class="terminal-body" id="term-body"></div>
+    <div class="terminal-input-row">
+      <span class="term-prompt">visitor@portfolio:~$&nbsp;</span>
+      <input id="term-input" type="text" autocomplete="off" spellcheck="false" />
+    </div>
+  `;
+  document.body.appendChild(terminal);
+
+  const termBody = document.getElementById('term-body');
+  const termInput = document.getElementById('term-input');
+
+  const termPrint = (text, cls = 'out') => {
+    text.split('\n').forEach(line => {
+      const el = document.createElement('div');
+      el.className = `term-line ${cls}`;
+      el.textContent = line;
+      termBody.appendChild(el);
+    });
+    termBody.scrollTop = termBody.scrollHeight;
+  };
+
+  const FS = {
+    'about.txt': `NAME     : 박형찬 (HYEONGCHAN)\nROLE     : Developer & Gamer\nLOC      : Seoul, KR\nSTATUS   : // ONLINE\nSPEC     : JavaScript, Python, C, C++`,
+    'projects.txt': `[0] breakout.exe   — Arcade Breakout (JS/HTML/CSS)\n[1] portfolio.exe  — This site (Vanilla JS)`,
+    'readme.txt': `이 터미널을 찾아낸 당신, 눈썰미가 좋군요.\n// easter egg unlocked`,
+  };
+
+  const CMDS = {
+    help: () => termPrint(
+      'Available commands:\n  ls            — list files\n  cat <file>    — read file\n  whoami        — identify visitor\n  clear         — clear terminal\n  exit          — close terminal\n  ping          — test connection',
+      'ok'
+    ),
+    ls: () => termPrint(Object.keys(FS).join('  '), 'ok'),
+    whoami: () => termPrint('visitor // ACCESS_LEVEL: GUEST\nYou found a hidden terminal. Impressive.', 'ok'),
+    ping: () => termPrint('PONG — latency: 0ms // all systems nominal', 'ok'),
+    clear: () => { termBody.innerHTML = ''; },
+    exit: () => { terminal.classList.remove('open'); },
+    cat: (args) => {
+      const file = args[0];
+      if (!file) return termPrint('usage: cat <filename>', 'err');
+      if (FS[file]) termPrint(FS[file], 'ok');
+      else termPrint(`cat: ${file}: No such file`, 'err');
+    },
+  };
+
+  const execCmd = (raw) => {
+    const parts = raw.trim().split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
+    termPrint(`visitor@portfolio:~$ ${raw}`, 'cmd');
+
+    if (!cmd) return;
+    if (CMDS[cmd]) CMDS[cmd](args);
+    else termPrint(`command not found: ${cmd}  (type 'help')`, 'err');
+  };
+
+  const openTerminal = () => {
+    terminal.classList.add('open');
+    if (termBody.children.length === 0) {
+      termPrint('// SECURE SHELL — HYEONGCHAN-SYS', 'ok');
+      termPrint("Type 'help' for available commands.", 'out');
+    }
+    setTimeout(() => termInput.focus(), 50);
+  };
+
+  termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      execCmd(termInput.value);
+      termInput.value = '';
+    }
+    if (e.key === 'Escape') {
+      terminal.classList.remove('open');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '`') {
+      e.preventDefault();
+      terminal.classList.contains('open') ? terminal.classList.remove('open') : openTerminal();
+    }
+    if (e.key === 'Escape' && terminal.classList.contains('open')) {
+      terminal.classList.remove('open');
+    }
+  });
+}
+
+/* ─── NeuralNet 추적 모드 패치 ─── */
+(function patchParticleUpdate() {
+  const orig = Particle.prototype.update;
+  Particle.prototype.update = function(mouse, time, trackMode) {
+    if (trackMode && mouse.x !== null && mouse.y !== null) {
+      // 추적 모드: 반발 대신 인력
+      const dx = mouse.x - this.x;
+      const dy = mouse.y - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const ATTRACT = this.isMobile ? 120 : 180;
+      if (dist < ATTRACT && dist > 1) {
+        const force = (ATTRACT - dist) / ATTRACT;
+        const strength = force * force * 0.5;
+        this.vx += (dx / dist) * strength;
+        this.vy += (dy / dist) * strength;
+      }
+      // 기본 물리 (repulsion 없이)
+      this.vx += (this.baseX - this.x) * 0.0018;
+      this.vy += (this.baseY - this.y) * 0.0018;
+      this.vx *= 0.94;
+      this.vy *= 0.94;
+      const maxV = this.isMobile ? 2 : 3;
+      const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+      if (speed > maxV) { this.vx = (this.vx / speed) * maxV; this.vy = (this.vy / speed) * maxV; }
+      this.x += this.vx;
+      this.y += this.vy;
+      this.currentOpacity = this.opacity + Math.sin(time * 0.0008 + this.pulseOffset) * 0.15;
+      this.currentOpacity = Math.max(0.1, Math.min(1, this.currentOpacity));
+    } else {
+      orig.call(this, mouse, time);
+    }
+  };
+})();
+
+/* ─── NeuralNet._loop trackMode 전달 패치 ─── */
+(function patchLoop() {
+  const origLoop = NeuralNet.prototype._loop;
+  NeuralNet.prototype._loop = function() {
+    this.animId = requestAnimationFrame(() => this._loop());
+    this.time++;
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.particles.forEach(p => p.update(this.mouse, this.time, this.trackMode));
+    this._drawConnections();
+    this.particles.forEach(p => p.draw(ctx));
+  };
+})();
+
+/* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -961,4 +1201,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start neural net
   const net = new NeuralNet('neural-canvas');
   net.init();
+
+  initEasterEggs(net);
 });

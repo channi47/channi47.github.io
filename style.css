@@ -1849,3 +1849,155 @@ section:not(#hero) {
   80%       { transform: translateX(4px); }
 }
 .btn-shake { animation: btn-shake 0.45s ease; }
+
+/* ═══════════════════════════════════════════════════
+   EASTER EGGS
+═══════════════════════════════════════════════════ */
+
+/* C — Super Glitch (이름 3회 클릭) */
+@keyframes super-glitch-before {
+  0%   { transform: translate(0); opacity: 0; }
+  5%   { transform: translate(-8px, 3px); opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 20%, 0 20%); }
+  10%  { transform: translate(8px, -3px); opacity: 0.9; clip-path: polygon(0 40%, 100% 40%, 100% 60%, 0 60%); }
+  15%  { transform: translate(-6px, 5px); opacity: 1; clip-path: polygon(0 70%, 100% 70%, 100% 90%, 0 90%); }
+  20%  { transform: translate(6px, -5px); opacity: 0.7; clip-path: polygon(0 10%, 100% 10%, 100% 35%, 0 35%); }
+  25%  { transform: translate(-4px, 2px); opacity: 1; clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%); }
+  30%  { transform: translate(0); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes super-glitch-after {
+  0%   { transform: translate(0); opacity: 0; }
+  7%   { transform: translate(8px, -4px); opacity: 1; clip-path: polygon(0 25%, 100% 25%, 100% 45%, 0 45%); }
+  12%  { transform: translate(-8px, 4px); opacity: 0.8; clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); }
+  17%  { transform: translate(5px, -2px); opacity: 1; clip-path: polygon(0 5%, 100% 5%, 100% 25%, 0 25%); }
+  22%  { transform: translate(-5px, 2px); opacity: 0.9; clip-path: polygon(0 45%, 100% 45%, 100% 65%, 0 65%); }
+  27%  { transform: translate(0); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.glitch.super-glitch::before {
+  animation: super-glitch-before 0.6s steps(1) forwards !important;
+  color: var(--cyan) !important;
+  text-shadow: -4px 0 var(--cyan), 4px 0 var(--violet) !important;
+}
+.glitch.super-glitch::after {
+  animation: super-glitch-after 0.6s steps(1) forwards !important;
+  color: var(--violet) !important;
+  text-shadow: 4px 0 var(--violet), -4px 0 var(--cyan) !important;
+}
+
+/* D — HUD LOCKED 플래시 */
+#hud-locked-flash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 2vw, 1rem);
+  color: var(--cyan);
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid var(--cyan);
+  padding: 0.6rem 1.4rem;
+  letter-spacing: 0.2em;
+  pointer-events: none;
+  z-index: 9000;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+#hud-locked-flash.show { opacity: 1; }
+
+/* 커서 추적 모드 — HUD 강조 */
+.hud-tl.track-active .hud-label {
+  color: var(--cyan) !important;
+  text-shadow: 0 0 8px var(--cyan);
+}
+
+/* E — 미니 터미널 */
+#easter-terminal {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: min(520px, 90vw);
+  background: rgba(5, 5, 8, 0.97);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 6px;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.15), 0 0 60px rgba(123, 47, 255, 0.08), inset 0 0 20px rgba(0, 212, 255, 0.02);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  z-index: 8000;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: terminal-open 0.18s ease;
+}
+#easter-terminal.open { display: flex; }
+
+@keyframes terminal-open {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 212, 255, 0.06);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  user-select: none;
+}
+.terminal-titlebar span {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+}
+.terminal-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.4);
+}
+
+.terminal-body {
+  padding: 0.75rem;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,212,255,0.2) transparent;
+  flex: 1;
+}
+.terminal-body::-webkit-scrollbar { width: 4px; }
+.terminal-body::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); border-radius: 2px; }
+
+.term-line {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.term-line.cmd { color: var(--cyan); }
+.term-line.out { color: #8899aa; }
+.term-line.err { color: #ff4466; }
+.term-line.ok  { color: var(--cyan); }
+
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  gap: 0.4rem;
+}
+.term-prompt {
+  color: var(--cyan);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+#term-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  caret-color: var(--cyan);
+}
