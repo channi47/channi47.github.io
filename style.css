@@ -2069,58 +2069,34 @@ body.crt-flicker-once {
 /* ═══════════════════════════════════════════════════
    CUSTOM CURSOR
 ═══════════════════════════════════════════════════ */
-#cursor-dot,
-#cursor-ring {
+#custom-cursor {
   position: fixed;
   top: 0; left: 0;
   pointer-events: none;
   z-index: 99999;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  will-change: transform, opacity;
+  will-change: transform;
+  filter: drop-shadow(0 0 3px #00d4ff) drop-shadow(0 0 7px rgba(0,212,255,0.55));
+  transition: filter 0.15s, opacity 0.15s;
 }
 
-#cursor-dot {
-  width: 5px; height: 5px;
-  background: #00d4ff;
-  box-shadow: 0 0 6px #00d4ff, 0 0 12px rgba(0,212,255,0.6);
-  transition: width 0.15s, height 0.15s, background 0.15s, box-shadow 0.15s;
+#custom-cursor svg {
+  display: block;
+  transition: transform 0.12s ease;
 }
 
-#cursor-ring {
-  width: 28px; height: 28px;
-  border: 1.5px solid rgba(0, 212, 255, 0.65);
-  box-shadow: 0 0 8px rgba(0,212,255,0.25), inset 0 0 4px rgba(0,212,255,0.08);
-  transition: width 0.2s ease, height 0.2s ease,
-              border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+/* hover — 글로우 강화 */
+body.cursor-hover #custom-cursor {
+  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 20px rgba(0,212,255,0.7));
 }
 
-/* hover 상태 */
-body.cursor-hover #cursor-ring {
-  width: 44px; height: 44px;
-  border-color: rgba(0, 212, 255, 0.9);
-  box-shadow: 0 0 16px rgba(0,212,255,0.45), inset 0 0 8px rgba(0,212,255,0.12);
-}
-body.cursor-hover #cursor-dot {
-  width: 4px; height: 4px;
-  background: #fff;
-  box-shadow: 0 0 8px #00d4ff, 0 0 18px rgba(0,212,255,0.8);
+/* 클릭 — 살짝 수축 */
+body.cursor-click #custom-cursor svg {
+  transform: scale(0.85);
 }
 
-/* 클릭 상태 */
-body.cursor-click #cursor-ring {
-  width: 20px; height: 20px;
-  border-color: rgba(0, 212, 255, 1);
-  box-shadow: 0 0 20px rgba(0,212,255,0.7), inset 0 0 8px rgba(0,212,255,0.3);
-}
-body.cursor-click #cursor-dot {
-  width: 7px; height: 7px;
-  box-shadow: 0 0 10px #00d4ff, 0 0 24px rgba(0,212,255,1);
-}
-
-/* 모바일 — 커서 비활성화 */
+/* 모바일 — 비활성화 */
 @media (hover: none) {
-  #cursor-dot, #cursor-ring { display: none; }
+  #custom-cursor { display: none; }
   body { cursor: auto; }
 }
 
