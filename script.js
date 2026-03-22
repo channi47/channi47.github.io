@@ -1130,94 +1130,6 @@ function initEasterEggs(neuralNet) {
     }
   });
 
-  /* ── F: 폰 흔들기 → 파티클 폭발 (DeviceMotion) ── */
-  (() => {
-    if (!neuralNet) return;
-
-    // #hud-locked-flash 재활용 (D 이스터에그가 없을 때를 위해 fallback 생성)
-    const getFlash = () => document.getElementById('hud-locked-flash') || (() => {
-      const el = document.createElement('div');
-      el.id = 'hud-locked-flash';
-      document.body.appendChild(el);
-      return el;
-    })();
-
-    const sfxShake = () => {
-      try {
-        const c = new (window.AudioContext || window.webkitAudioContext)();
-        const o = c.createOscillator(), g = c.createGain();
-        o.connect(g); g.connect(c.destination);
-        o.type = 'sine';
-        o.frequency.setValueAtTime(80, c.currentTime);
-        o.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.35);
-        g.gain.setValueAtTime(0.15, c.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.35);
-        o.start(c.currentTime); o.stop(c.currentTime + 0.35);
-      } catch(e) {}
-    };
-
-    const triggerShake = () => {
-      const pts = neuralNet.particles;
-      const cw = neuralNet.canvas.width;
-      const ch = neuralNet.canvas.height;
-      const cx = cw / 2, cy = ch / 2;
-
-      // 1단계: 중앙으로 모음
-      pts.forEach(p => { p.baseX = cx; p.baseY = cy; });
-
-      // 2단계: 300ms 후 가장자리로 흩뿌림
-      setTimeout(() => {
-        pts.forEach(p => {
-          p.baseX = Math.random() * cw;
-          p.baseY = Math.random() * ch;
-        });
-      }, 300);
-
-      sfxShake();
-      const flash = getFlash();
-      flash.textContent = '// SEISMIC EVENT DETECTED';
-      flash.classList.add('show');
-      setTimeout(() => flash.classList.remove('show'), 1800);
-    };
-
-    let shakeCooldown = false;
-    let lastAcc = 0;
-
-    const handleMotion = (e) => {
-      if (shakeCooldown) return;
-      const a = e.accelerationIncludingGravity;
-      if (!a) return;
-      const mag = Math.sqrt((a.x||0)**2 + (a.y||0)**2 + (a.z||0)**2);
-      const delta = Math.abs(mag - lastAcc);
-      lastAcc = mag;
-      if (delta >= 25) {
-        shakeCooldown = true;
-        triggerShake();
-        setTimeout(() => { shakeCooldown = false; }, 3000);
-      }
-    };
-
-    const registerMotion = () => {
-      if (typeof DeviceMotionEvent !== 'undefined' &&
-          typeof DeviceMotionEvent.requestPermission === 'function') {
-        // iOS 13+ 권한 요청 (사용자 제스처 내에서만 가능)
-        DeviceMotionEvent.requestPermission()
-          .then(state => { if (state === 'granted') window.addEventListener('devicemotion', handleMotion); })
-          .catch(() => {});
-      } else {
-        window.addEventListener('devicemotion', handleMotion);
-      }
-    };
-
-    if (typeof DeviceMotionEvent !== 'undefined' &&
-        typeof DeviceMotionEvent.requestPermission === 'function') {
-      // iOS: 첫 탭 시 권한 요청
-      document.addEventListener('click', registerMotion, { once: true });
-    } else {
-      registerMotion();
-    }
-  })();
-
   /* ── G: 롱프레스 → CLASSIFIED 팝업 + CRT 플리커 ── */
   (() => {
     const SECRETS = [
@@ -1279,7 +1191,7 @@ function initEasterEggs(neuralNet) {
     });
   })();
 
-  /* ── H: 더블탭/더블클릭 → 화면 색상 반전 ── */
+  /* ── H: 5회 연속 탭/클릭 → 화면 색상 반전 ── */
   (() => {
     const IGNORE = new Set(['INPUT', 'TEXTAREA', 'BUTTON', 'A', 'SELECT']);
 
@@ -1303,20 +1215,17 @@ function initEasterEggs(neuralNet) {
       setTimeout(() => document.body.classList.remove('color-invert'), 350);
     };
 
-    // 터치: 더블탭
-    let lastTap = 0;
-    document.addEventListener('touchend', (e) => {
+    let tapTimes = [];
+    const onTap = (e) => {
       if (IGNORE.has(e.target.tagName)) return;
       const now = Date.now();
-      if (now - lastTap < 400) { triggerInvert(); lastTap = 0; }
-      else lastTap = now;
-    }, { passive: true });
+      tapTimes = tapTimes.filter(t => now - t < 1200);
+      tapTimes.push(now);
+      if (tapTimes.length >= 5) { tapTimes = []; triggerInvert(); }
+    };
 
-    // 데스크톱: 더블클릭
-    document.addEventListener('dblclick', (e) => {
-      if (IGNORE.has(e.target.tagName)) return;
-      triggerInvert();
-    });
+    document.addEventListener('touchend', onTap, { passive: true });
+    document.addEventListener('click', onTap);
   })();
 }
 
