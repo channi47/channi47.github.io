@@ -1185,42 +1185,6 @@ function initEasterEggs(neuralNet) {
     });
   })();
 
-  /* ── H: 5회 연속 탭/클릭 → 화면 색상 반전 ── */
-  (() => {
-    const IGNORE = new Set(['INPUT', 'TEXTAREA', 'BUTTON', 'A', 'SELECT']);
-
-    const sfxInvert = () => {
-      try {
-        const c = new (window.AudioContext || window.webkitAudioContext)();
-        const o = c.createOscillator(), g = c.createGain();
-        o.connect(g); g.connect(c.destination);
-        o.type = 'square';
-        o.frequency.setValueAtTime(300, c.currentTime);
-        o.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.12);
-        g.gain.setValueAtTime(0.07, c.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.12);
-        o.start(c.currentTime); o.stop(c.currentTime + 0.12);
-      } catch(e) {}
-    };
-
-    const triggerInvert = () => {
-      document.body.classList.add('color-invert');
-      sfxInvert();
-      setTimeout(() => document.body.classList.remove('color-invert'), 350);
-    };
-
-    let tapTimes = [];
-    const onTap = (e) => {
-      if (IGNORE.has(e.target.tagName)) return;
-      const now = Date.now();
-      tapTimes = tapTimes.filter(t => now - t < 1200);
-      tapTimes.push(now);
-      if (tapTimes.length >= 5) { tapTimes = []; triggerInvert(); }
-    };
-
-    document.addEventListener('touchend', onTap, { passive: true });
-    document.addEventListener('click', onTap);
-  })();
 }
 
 /* ─── NeuralNet 추적 모드 패치 ─── */

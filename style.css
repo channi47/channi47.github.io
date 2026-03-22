@@ -2059,8 +2059,3 @@ body.crt-flicker-once {
   animation: crt-flicker-anim 0.5s steps(1) forwards;
 }
 
-/* ── H: 색상 반전 ── */
-body.color-invert {
-  filter: invert(1);
-  transition: filter 0.15s;
-}
