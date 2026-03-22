@@ -944,13 +944,12 @@ function initSoundEffects() {
 ═══════════════════════════════════════════════════ */
 function initEasterEggs(neuralNet) {
 
-  /* ── C: 히어로 이름 3회 연타 클릭 → 초강력 글리치 ── */
+  /* ── 히어로 이름 클릭 → 글리치 버스트 ── */
   const heroName = document.querySelector('.hero-name.glitch');
   if (heroName) {
-    let clickTimes = [];
     const CODE_NAMES = ['//CR-7734', 'SUBJECT_07', 'NODE_∅X', '█████████', 'ERR_IDENTITY'];
+    let glitching = false;
 
-    // SFX: 알람 버즈
     const sfxGlitchBurst = () => {
       try {
         const c = new (window.AudioContext || window.webkitAudioContext)();
@@ -967,25 +966,20 @@ function initEasterEggs(neuralNet) {
       } catch(e) {}
     };
 
+    heroName.style.cursor = 'pointer';
     heroName.addEventListener('click', () => {
-      const now = Date.now();
-      clickTimes = clickTimes.filter(t => now - t < 900);
-      clickTimes.push(now);
-
-      if (clickTimes.length >= 3) {
-        clickTimes = [];
-        const original = heroName.getAttribute('data-text');
-        const codeName = CODE_NAMES[Math.floor(Math.random() * CODE_NAMES.length)];
-
-        heroName.setAttribute('data-text', codeName);
-        heroName.classList.add('super-glitch');
-        sfxGlitchBurst();
-
-        setTimeout(() => {
-          heroName.setAttribute('data-text', original);
-          heroName.classList.remove('super-glitch');
-        }, 1800);
-      }
+      if (glitching) return;
+      glitching = true;
+      const original = heroName.getAttribute('data-text');
+      const codeName = CODE_NAMES[Math.floor(Math.random() * CODE_NAMES.length)];
+      heroName.setAttribute('data-text', codeName);
+      heroName.classList.add('super-glitch');
+      sfxGlitchBurst();
+      setTimeout(() => {
+        heroName.setAttribute('data-text', original);
+        heroName.classList.remove('super-glitch');
+        glitching = false;
+      }, 1800);
     });
   }
 
