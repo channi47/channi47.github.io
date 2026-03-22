@@ -77,12 +77,6 @@ body {
   line-height: 1.7;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  cursor: none;
-}
-
-a, button, [role="button"], label, select, input[type="submit"],
-input[type="button"], input[type="checkbox"], input[type="radio"] {
-  cursor: none;
 }
 
 ::selection {
@@ -2066,37 +2060,4 @@ body.crt-flicker-once {
   animation: crt-flicker-anim 0.5s steps(1) forwards;
 }
 
-/* ═══════════════════════════════════════════════════
-   CUSTOM CURSOR
-═══════════════════════════════════════════════════ */
-#custom-cursor {
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 99999;
-  will-change: transform;
-  filter: drop-shadow(0 0 2px #00d4ff) drop-shadow(0 0 5px rgba(0,212,255,0.45));
-  transition: filter 0.15s, opacity 0.15s;
-}
-
-#custom-cursor svg {
-  display: block;
-  transition: transform 0.12s ease;
-}
-
-/* hover — 글로우 강화 */
-body.cursor-hover #custom-cursor {
-  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px #00d4ff) drop-shadow(0 0 14px rgba(0,212,255,0.6));
-}
-
-/* 클릭 — 살짝 수축 */
-body.cursor-click #custom-cursor svg {
-  transform: scale(0.85);
-}
-
-/* 모바일 — 비활성화 */
-@media (hover: none) {
-  #custom-cursor { display: none; }
-  body { cursor: auto; }
-}
 

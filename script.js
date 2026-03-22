@@ -1237,56 +1237,12 @@ function initEasterEggs(neuralNet) {
 /* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════
-   CUSTOM CURSOR
-═══════════════════════════════════════════════════ */
-function initCustomCursor() {
-  if (window.matchMedia('(hover: none)').matches) return;
-
-  // 픽셀 화살표 커서 SVG — 윤곽선만 시안, 내부 투명, crispEdges로 픽셀 느낌
-  const ARROW_SVG = `<svg width="14" height="20" viewBox="0 0 14 20" fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style="image-rendering:pixelated;shape-rendering:crispEdges">
-    <path d="M1 0 L1 15 L4 12 L6 18 L8 17 L6 11 L10 11 Z"
-      fill="transparent"
-      stroke="#00d4ff" stroke-width="1.5"
-      stroke-linejoin="miter" stroke-linecap="square"/>
-  </svg>`;
-
-  const cursor = document.createElement('div');
-  cursor.id = 'custom-cursor';
-  cursor.innerHTML = ARROW_SVG;
-  document.body.appendChild(cursor);
-
-  let cx = -100, cy = -100;
-
-  document.addEventListener('mousemove', e => {
-    cx = e.clientX;
-    cy = e.clientY;
-    cursor.style.transform = `translate(${cx}px, ${cy}px)`;
-  });
-
-  const hoverSel = 'a, button, [role="button"], label, select, .card, .skill-tag, .hud-tl, input, textarea, .nav-link, .btn';
-  document.addEventListener('mouseover', e => {
-    if (e.target.closest(hoverSel)) document.body.classList.add('cursor-hover');
-  });
-  document.addEventListener('mouseout', e => {
-    if (e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover');
-  });
-
-  document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-  document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
-  document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
-  document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   // Delay observers slightly so elements in initial viewport animate in
   setTimeout(() => {
     initScrollEffects();
   }, 120);
 
-  initCustomCursor();
   initNavigation();
   initAgeClock();
   initScrollProgress();
