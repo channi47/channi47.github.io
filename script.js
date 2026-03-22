@@ -1237,12 +1237,63 @@ function initEasterEggs(neuralNet) {
 /* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════════════ */
+function initCustomCursor() {
+  // 터치 전용 디바이스 제외
+  if (window.matchMedia('(hover: none)').matches) return;
+
+  const dot  = document.createElement('div');
+  const ring = document.createElement('div');
+  dot.id  = 'cursor-dot';
+  ring.id = 'cursor-ring';
+  document.body.append(dot, ring);
+
+  let mouseX = -100, mouseY = -100;
+  let ringX  = -100, ringY  = -100;
+  let rafId;
+
+  // 도트는 즉시 이동, 링은 부드럽게 따라옴
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.transform = `translate(calc(-50% + ${mouseX}px), calc(-50% + ${mouseY}px))`;
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.14;
+    ringY += (mouseY - ringY) * 0.14;
+    ring.style.transform = `translate(calc(-50% + ${ringX}px), calc(-50% + ${ringY}px))`;
+    rafId = requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // hover 감지
+  const hoverSelectors = 'a, button, [role="button"], label, select, .card, .skill-tag, .hud-tl, input, textarea, .nav-link, .btn';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverSelectors)) document.body.classList.add('cursor-hover');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverSelectors)) document.body.classList.remove('cursor-hover');
+  });
+
+  // 클릭 효과
+  document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+  document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
+
+  // 창 이탈 시 숨김
+  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Delay observers slightly so elements in initial viewport animate in
   setTimeout(() => {
     initScrollEffects();
   }, 120);
 
+  initCustomCursor();
   initNavigation();
   initAgeClock();
   initScrollProgress();
