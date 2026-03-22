@@ -1243,22 +1243,14 @@ function initEasterEggs(neuralNet) {
 function initCustomCursor() {
   if (window.matchMedia('(hover: none)').matches) return;
 
-  // 화살표 커서 SVG — 좌상단 끝이 핫스팟(0,0)
-  const ARROW_SVG = `<svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 1 L1 20 L5.5 15 L8.2 22 L11.2 20.8 L8.5 13.8 L15 13.8 Z"
-      fill="#00d4ff" fill-opacity="0.88"
-      stroke="#00d4ff" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
-  </svg>`;
-
-  // 포인터(손가락) 커서 SVG
-  const POINTER_SVG = `<svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7 1 C7 1 7 12 7 13 L4.5 11.5 C3.5 11 2.5 11.5 2.5 12.5 C2.5 13.5 3 14 4 14.5
-             L8 17 C8 17 8 21 8 22 C8 23.5 9 24.5 10.5 24.5 L15 24.5
-             C17 24.5 18.5 23 18.5 21 L18.5 16 C18.5 14.5 17.5 13.5 16 13.5
-             L15 13.5 L15 4 C15 2.5 14 1 12.5 1 C11 1 10 2 10 3.5 L10 4
-             C10 2.5 9 1.5 7.5 1.5 Z"
-      fill="#00d4ff" fill-opacity="0.88"
-      stroke="#00d4ff" stroke-width="0.8" stroke-linejoin="round"/>
+  // 픽셀 화살표 커서 SVG — 윤곽선만 시안, 내부 투명, crispEdges로 픽셀 느낌
+  const ARROW_SVG = `<svg width="14" height="20" viewBox="0 0 14 20" fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style="image-rendering:pixelated;shape-rendering:crispEdges">
+    <path d="M1 0 L1 15 L4 12 L6 18 L8 17 L6 11 L10 11 Z"
+      fill="transparent"
+      stroke="#00d4ff" stroke-width="1.5"
+      stroke-linejoin="miter" stroke-linecap="square"/>
   </svg>`;
 
   const cursor = document.createElement('div');
@@ -1267,7 +1259,6 @@ function initCustomCursor() {
   document.body.appendChild(cursor);
 
   let cx = -100, cy = -100;
-  let isHover = false;
 
   document.addEventListener('mousemove', e => {
     cx = e.clientX;
@@ -1277,14 +1268,10 @@ function initCustomCursor() {
 
   const hoverSel = 'a, button, [role="button"], label, select, .card, .skill-tag, .hud-tl, input, textarea, .nav-link, .btn';
   document.addEventListener('mouseover', e => {
-    if (e.target.closest(hoverSel)) {
-      if (!isHover) { isHover = true; cursor.innerHTML = POINTER_SVG; document.body.classList.add('cursor-hover'); }
-    }
+    if (e.target.closest(hoverSel)) document.body.classList.add('cursor-hover');
   });
   document.addEventListener('mouseout', e => {
-    if (e.target.closest(hoverSel)) {
-      isHover = false; cursor.innerHTML = ARROW_SVG; document.body.classList.remove('cursor-hover');
-    }
+    if (e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover');
   });
 
   document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));

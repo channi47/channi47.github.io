@@ -2075,7 +2075,7 @@ body.crt-flicker-once {
   pointer-events: none;
   z-index: 99999;
   will-change: transform;
-  filter: drop-shadow(0 0 3px #00d4ff) drop-shadow(0 0 7px rgba(0,212,255,0.55));
+  filter: drop-shadow(0 0 2px #00d4ff) drop-shadow(0 0 5px rgba(0,212,255,0.45));
   transition: filter 0.15s, opacity 0.15s;
 }
 
@@ -2086,7 +2086,7 @@ body.crt-flicker-once {
 
 /* hover — 글로우 강화 */
 body.cursor-hover #custom-cursor {
-  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 20px rgba(0,212,255,0.7));
+  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px #00d4ff) drop-shadow(0 0 14px rgba(0,212,255,0.6));
 }
 
 /* 클릭 — 살짝 수축 */
