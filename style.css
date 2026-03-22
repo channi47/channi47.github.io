@@ -2001,3 +2001,66 @@ section:not(#hero) {
   font-size: 0.8rem;
   caret-color: var(--cyan);
 }
+
+/* ── G: 롱프레스 팝업 ── */
+#longpress-popup {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9500;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+#longpress-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lp-inner {
+  background: rgba(5, 5, 8, 0.97);
+  border: 1px solid rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
+  padding: 1.5rem 2rem;
+  max-width: min(420px, 88vw);
+  width: 100%;
+}
+.lp-header {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+  padding-bottom: 0.6rem;
+}
+.lp-body {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: rgba(0, 212, 255, 0.6);
+  line-height: 1.9;
+  margin: 0;
+  white-space: pre;
+}
+
+/* CRT 플리커 (롱프레스 발동 시) */
+@keyframes crt-flicker-anim {
+  0%   { opacity: 1; }
+  15%  { opacity: 0.4; }
+  30%  { opacity: 1; }
+  50%  { opacity: 0.6; }
+  65%  { opacity: 1; }
+  80%  { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+body.crt-flicker-once {
+  animation: crt-flicker-anim 0.5s steps(1) forwards;
+}
+
+/* ── H: 색상 반전 ── */
+body.color-invert {
+  filter: invert(1);
+  transition: filter 0.15s;
+}

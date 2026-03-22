@@ -1129,6 +1129,195 @@ function initEasterEggs(neuralNet) {
       terminal.classList.remove('open');
     }
   });
+
+  /* ── F: 폰 흔들기 → 파티클 폭발 (DeviceMotion) ── */
+  (() => {
+    if (!neuralNet) return;
+
+    // #hud-locked-flash 재활용 (D 이스터에그가 없을 때를 위해 fallback 생성)
+    const getFlash = () => document.getElementById('hud-locked-flash') || (() => {
+      const el = document.createElement('div');
+      el.id = 'hud-locked-flash';
+      document.body.appendChild(el);
+      return el;
+    })();
+
+    const sfxShake = () => {
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)();
+        const o = c.createOscillator(), g = c.createGain();
+        o.connect(g); g.connect(c.destination);
+        o.type = 'sine';
+        o.frequency.setValueAtTime(80, c.currentTime);
+        o.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.35);
+        g.gain.setValueAtTime(0.15, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.35);
+        o.start(c.currentTime); o.stop(c.currentTime + 0.35);
+      } catch(e) {}
+    };
+
+    const triggerShake = () => {
+      const pts = neuralNet.particles;
+      const cw = neuralNet.canvas.width;
+      const ch = neuralNet.canvas.height;
+      const cx = cw / 2, cy = ch / 2;
+
+      // 1단계: 중앙으로 모음
+      pts.forEach(p => { p.baseX = cx; p.baseY = cy; });
+
+      // 2단계: 300ms 후 가장자리로 흩뿌림
+      setTimeout(() => {
+        pts.forEach(p => {
+          p.baseX = Math.random() * cw;
+          p.baseY = Math.random() * ch;
+        });
+      }, 300);
+
+      sfxShake();
+      const flash = getFlash();
+      flash.textContent = '// SEISMIC EVENT DETECTED';
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 1800);
+    };
+
+    let shakeCooldown = false;
+    let lastAcc = 0;
+
+    const handleMotion = (e) => {
+      if (shakeCooldown) return;
+      const a = e.accelerationIncludingGravity;
+      if (!a) return;
+      const mag = Math.sqrt((a.x||0)**2 + (a.y||0)**2 + (a.z||0)**2);
+      const delta = Math.abs(mag - lastAcc);
+      lastAcc = mag;
+      if (delta >= 25) {
+        shakeCooldown = true;
+        triggerShake();
+        setTimeout(() => { shakeCooldown = false; }, 3000);
+      }
+    };
+
+    const registerMotion = () => {
+      if (typeof DeviceMotionEvent !== 'undefined' &&
+          typeof DeviceMotionEvent.requestPermission === 'function') {
+        // iOS 13+ 권한 요청 (사용자 제스처 내에서만 가능)
+        DeviceMotionEvent.requestPermission()
+          .then(state => { if (state === 'granted') window.addEventListener('devicemotion', handleMotion); })
+          .catch(() => {});
+      } else {
+        window.addEventListener('devicemotion', handleMotion);
+      }
+    };
+
+    if (typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
+      // iOS: 첫 탭 시 권한 요청
+      document.addEventListener('click', registerMotion, { once: true });
+    } else {
+      registerMotion();
+    }
+  })();
+
+  /* ── G: 롱프레스 → CLASSIFIED 팝업 + CRT 플리커 ── */
+  (() => {
+    const SECRETS = [
+      'PROTOCOL-DELTA ACTIVE\nCLEARANCE: LEVEL 7\nSUBJECT: HYEONGCHAN\nSTATUS: // WATCHING',
+      'FILE: REDACTED\nOPERATION: ████████\nCOORDINATES: ENCRYPTED\nTIMESTAMP: ' + new Date().toISOString().slice(0,10),
+      'AGENT ID: CR-7734\nMISSION: PORTFOLIO_DEPLOY\nRISK LEVEL: LOW\nNEXT STEP: CLASSIFIED',
+      'NEURAL_NET BREACH DETECTED\nINTRUSION SOURCE: UNKNOWN\nCOUNTERMEASURES: ACTIVE',
+      'SYS CORE DUMP:\n> memory_leak: 0\n> uptime: ∞\n> threat_level: NONE',
+    ];
+
+    const sfxAlert = () => {
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)();
+        [[600, 0], [400, 0.12]].forEach(([freq, delay]) => {
+          const o = c.createOscillator(), g = c.createGain();
+          o.connect(g); g.connect(c.destination);
+          o.type = 'square';
+          o.frequency.setValueAtTime(freq, c.currentTime + delay);
+          g.gain.setValueAtTime(0.08, c.currentTime + delay);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + 0.1);
+          o.start(c.currentTime + delay); o.stop(c.currentTime + delay + 0.1);
+        });
+      } catch(e) {}
+    };
+
+    // 팝업 엘리먼트 생성
+    const popup = document.createElement('div');
+    popup.id = 'longpress-popup';
+    popup.innerHTML = '<div class="lp-inner"><div class="lp-header">// ACCESS GRANTED — CLASSIFIED</div><pre class="lp-body"></pre></div>';
+    document.body.appendChild(popup);
+
+    const showPopup = () => {
+      const text = SECRETS[Math.floor(Math.random() * SECRETS.length)];
+      popup.querySelector('.lp-body').textContent = text;
+      popup.classList.add('show');
+      document.body.classList.add('crt-flicker-once');
+      sfxAlert();
+      setTimeout(() => document.body.classList.remove('crt-flicker-once'), 500);
+      setTimeout(() => popup.classList.remove('show'), 2500);
+    };
+
+    popup.addEventListener('click', () => popup.classList.remove('show'));
+
+    const targets = document.querySelectorAll('.hero-name, .scan-block');
+    targets.forEach(el => {
+      let timer = null;
+      const start = (e) => {
+        if (e.button !== undefined && e.button !== 0) return; // 좌클릭만
+        timer = setTimeout(() => { timer = null; showPopup(); }, 600);
+      };
+      const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+
+      el.addEventListener('mousedown', start);
+      el.addEventListener('touchstart', start, { passive: true });
+      el.addEventListener('mouseup', cancel);
+      el.addEventListener('mouseleave', cancel);
+      el.addEventListener('touchend', cancel);
+      el.addEventListener('touchcancel', cancel);
+    });
+  })();
+
+  /* ── H: 더블탭/더블클릭 → 화면 색상 반전 ── */
+  (() => {
+    const IGNORE = new Set(['INPUT', 'TEXTAREA', 'BUTTON', 'A', 'SELECT']);
+
+    const sfxInvert = () => {
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)();
+        const o = c.createOscillator(), g = c.createGain();
+        o.connect(g); g.connect(c.destination);
+        o.type = 'square';
+        o.frequency.setValueAtTime(300, c.currentTime);
+        o.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.12);
+        g.gain.setValueAtTime(0.07, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.12);
+        o.start(c.currentTime); o.stop(c.currentTime + 0.12);
+      } catch(e) {}
+    };
+
+    const triggerInvert = () => {
+      document.body.classList.add('color-invert');
+      sfxInvert();
+      setTimeout(() => document.body.classList.remove('color-invert'), 350);
+    };
+
+    // 터치: 더블탭
+    let lastTap = 0;
+    document.addEventListener('touchend', (e) => {
+      if (IGNORE.has(e.target.tagName)) return;
+      const now = Date.now();
+      if (now - lastTap < 400) { triggerInvert(); lastTap = 0; }
+      else lastTap = now;
+    }, { passive: true });
+
+    // 데스크톱: 더블클릭
+    document.addEventListener('dblclick', (e) => {
+      if (IGNORE.has(e.target.tagName)) return;
+      triggerInvert();
+    });
+  })();
 }
 
 /* ─── NeuralNet 추적 모드 패치 ─── */
