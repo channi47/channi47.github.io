@@ -1128,7 +1128,7 @@ function initEasterEggs(neuralNet) {
   (() => {
     const SECRETS = [
       'PROTOCOL-DELTA ACTIVE\nCLEARANCE: LEVEL 7\nSUBJECT: HYEONGCHAN\nSTATUS: // WATCHING',
-      'FILE: REDACTED\nOPERATION: ████████\nCOORDINATES: ENCRYPTED\nTIMESTAMP: ' + new Date().toISOString().slice(0,10),
+      'FILE: REDACTED\nOPERATION: ████████\nCOORDINATES: ENCRYPTED\nTIMESTAMP: ' + new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' })).toLocaleDateString('sv-SE'),
       'AGENT ID: CR-7734\nMISSION: PORTFOLIO_DEPLOY\nRISK LEVEL: LOW\nNEXT STEP: CLASSIFIED',
       'NEURAL_NET BREACH DETECTED\nINTRUSION SOURCE: UNKNOWN\nCOUNTERMEASURES: ACTIVE',
       'SYS CORE DUMP:\n> memory_leak: 0\n> uptime: ∞\n> threat_level: NONE',
