@@ -675,7 +675,7 @@ section:not(#hero) {
   text-shadow: var(--cyan-glow-sm);
 }
 .stat-number[data-target="∞"] {
-  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-size: clamp(2.6rem, 5.2vw, 3.9rem);
   letter-spacing: -0.05em;
 }
 @keyframes infinity-pop {
