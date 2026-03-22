@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /home/user/mypage && git push github main 2>/dev/null || true",
+            "statusMessage": "GitHub Pages에 배포 중...",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
